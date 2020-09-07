@@ -1,4 +1,4 @@
-# 写法一：
+# 写法一
 
 ``` bash
 #!/bin/bash
@@ -9,7 +9,7 @@ do
 done < file(待读取的文件)
 ```
 
-# 写法二：
+# 写法二
 
 ```bash
 #!/bin/bash
@@ -20,7 +20,7 @@ do
 done
 ```
 
-# 写法三：
+# 写法三
 
 ```bash
 for line in `cat file(待读取的文件)`
@@ -29,7 +29,7 @@ do
 done
 ```
 
-## 说明：
+## 说明
 
 for逐行读和while逐行读是有区别的,如:
 

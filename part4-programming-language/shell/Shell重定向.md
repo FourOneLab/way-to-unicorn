@@ -1,14 +1,17 @@
 在 shell 中，最常使用的 FD (file descriptor) 大概有三个, 分别是:
+
 - 0 是一个文件描述符，表示标准输入(stdin)
 - 1 是一个文件描述符，表示标准输出(stdout)
 - 2 是一个文件描述符，表示标准错误(stderr)
 
 在标准情况下, 这些FD分别跟如下设备关联:
+
 - stdin(0): keyboard 键盘输入,并返回在前端
 - stdout(1): monitor 正确返回值 输出到前端
 - stderr(2): monitor 错误返回值 输出到前端
 
 ## 例子
+
 ``` bash
 # 当前目录只有一个文件 a.txt.
 [root@redhat box]# ls
@@ -18,6 +21,7 @@ a.txt
 ls: b.txt: No such file or directory # 由于没有b.txt这个文件, 于是返回错误值, 这就是所谓的2输出
 a.txt                                # 而这个就是所谓的1输出
 ```
+
 ``` bash
 [root@redhat box]# ls a.txt b.txt 1>file.out 2>file.err #执行后,没有任何返回值. 返回值都重定向到相应的文件中了,而不再前端显示
 [root@redhat box]# cat file.out
@@ -25,7 +29,9 @@ a.txt
 [root@redhat box]# cat file.err
 ls: b.txt: No such file or directory
 ```
+
 一般来说, "1>" 通常可以省略成 ">". 即可以把如上命令写成:
+
 ```bash
 ls a.txt b.txt >file.out 2>file.err
 ```
@@ -46,17 +52,21 @@ a.txt
 >输出不只1和2, 还有其他的类型, 这两种只是最常用和最基本的.
 
  `>`是重定向符，就是把前面输出的内容重定向到后面指定的位置，比如：
+
 ```bash
 echo "一些内容" > filename.txt
 # 把 "一些内容" 写入到 filename.txt 文件中。
 ```
+
 `>`前是可以加数字来说明把什么内容重定向到文件中，**默认是把标准输出重定向到文件中**：
+
 ```bash
 echo "一些内容" 1> filename.txt
 # 和上面的例子效果一样
 ```
 
 如果是错误信息就不会输出到filename.txt：
+
 ```bash
 ls nodir 1> filename.txt
 ls: nodir: No such file or directory
@@ -64,6 +74,7 @@ ls: nodir: No such file or directory
 ```
 
 执行下面命令就会把错误信息写入到filename.txt中：
+
 ```bash
 ls nodir 2> filename.txt
 cat filename.txt
@@ -81,6 +92,7 @@ ls nodir 1> filename.txt 2>&1
 cat filename.txt
 ls: nodir: No such file or directory
 ```
+
 把**标准输出**重定向到文件 filename.txt，然后把**标准错误**重定向到**标准输出**，所以最后的错误信息也通过标准输出写入到了文件中。
 
 ---
