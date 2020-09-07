@@ -15,6 +15,7 @@
   * [Shell](part4-pl/shell)  
   * [AWK](part4-pl/awk)
     * [入门](part4-pl/awk/01-入门)
+    * [简单输出](part4-pl/awk/02-简单输出.md)
 * [Part V 工具](part5-tool-tool)
   * [Git](part5-tool/git)
   * [Docker](part5-tool/docker)
