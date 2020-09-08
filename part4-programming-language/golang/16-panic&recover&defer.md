@@ -1,24 +1,27 @@
----
-title: 16-panic&recover&defer
-date: 2019-11-25T11:15:47.522182+08:00
-draft: false
----
+
+# 恐慌、恢复和延迟执行
 
 ## 运行时恐慌（panic）
 
 > 这种异常只有在程序运行时才会抛出。
 
 ```go
-slice := []int{1,2,3}
-print(slice[3])
+package main
 
-// panic: runtime error: index out of range
+func main() {
+	slice := []int{1, 2, 3}
+	print(slice[3])
 
-// goroutine 1 [running]:       ID为1的用户级线程在此panic被引发时正在运行
-// main.main()                  用户级线程包装的go函数，在这里是main函数，所以这个是主用户级线程
-//  /Users/haolin/GeekTime/Golang_Puzzlers/src/puzzlers/article19/q0/demo47.go:5 +0x3d
-// painc被引起时正在执行的代码     +0x3d 表示此行代码对于其所属的入口程序计数偏移量
-// exit status 2        Go语言中因panic而退出的程序一般退出码都是2
+    // output：
+
+	// panic: runtime error: index out of range
+
+	// goroutine 1 [running]:                           ID为1的用户级线程在此panic被引发时正在运行
+	// main.main()                                      用户级线程包装的go函数，在这里是main函数，所以这个是主用户级线程
+	// demo.go:5 +0x3d
+	// panic 被引起时正在执行的代码                         +0x3d 表示此行代码对于其所属的入口程序计数偏移量
+	// Process finished with exit code 2                Go语言中因panic而退出的程序一般退出码都是2
+}
 ```
 
 Go语言运行时系统，会在执行到这个代码的时候抛出一个索引越界的异常，当panic被抛出后，没有在程序里添加任何保护措施的话，程序（或者代表它的进程）就会在打印出panic的详细信之后终止运行。
@@ -63,17 +66,17 @@ Go语言内建的recover专用于恢复panic，平息运行时恐慌。recover�
 package main
 
 import (
- "fmt"
- "errors"
+	"errors"
+	"fmt"
 )
 
 func main() {
- fmt.Println("Enter function main.")
- // 引发 panic。
- panic(errors.New("something wrong"))       // 手动调用panic引发运行时恐慌
- p := recover()
- fmt.Printf("panic: %s\n", p)               // 手动调用recover恢复panic
- fmt.Println("Exit function main.")
+	fmt.Println("Enter function main.")
+	// 引发 panic
+	panic(errors.New("something wrong")) // 手动调用panic引发运行时恐慌
+	p := recover()
+	fmt.Printf("panic: %s\n", p) // 手动调用recover恢复panic
+	fmt.Println("Exit function main.")
 }
 ```
 
@@ -81,7 +84,7 @@ recover函数的调用没有任何作用，甚至都没有机会执行，因为p
 
 **如果我们在调用recover函数时没有发生panic，那么该函数不会做任何事情，并且只会返回一个nil**。正确调用recover函数需要配合defer语句一起使用。
 
-### defer语句
+## defer语句
 
 defer语句是被用来延迟执行代码的，延迟到该语句所在的函数即将执行结束的那一刻，无论结束执行的原因是什么。有一些调用表达式不能出现在defer语句中：
 
@@ -96,29 +99,29 @@ defer语句是被用来延迟执行代码的，延迟到该语句所在的函数
 package main
 
 import (
- "fmt"
- "errors"
+	"errors"
+	"fmt"
 )
 
 func main() {
- fmt.Println("Enter function main.")
- defer func(){
-  fmt.Println("Enter defer function.")
-  // p!=nil 判断确实发生了panic
-  if p := recover(); p != nil {
-   fmt.Printf("panic: %s\n", p)
-  }
-  fmt.Println("Exit defer function.")
- }()
- // 引发 panic。
- panic(errors.New("something wrong"))
- fmt.Println("Exit function main.")
+	fmt.Println("Enter function main.")
+	defer func() {
+		fmt.Println("Enter defer function.")
+		// p!=nil 判断确实发生了panic
+		if p := recover(); p != nil {
+			fmt.Printf("panic: %s\n", p)
+		}
+		fmt.Println("Exit defer function.")
+	}()
+	// 引发 panic
+	panic(errors.New("something wrong"))
+	fmt.Println("Exit function main.")
 }
 ```
 
 **注意defer语句的位置，尽量写在函数体的开始处，因为在引发panic的语句之后的所有语句，都没有任何执行的机会**。
 
-## 一个函数中有多个defer语句，defer函数的执行顺序
+### 一个函数中有多个defer语句，defer函数的执行顺序
 
 在一个函数中，defer函数调用的执行顺序与它们分别所属的defer语句的出现顺序（执行顺序）完全相反。当一个函数即将结束执行时，其中写在最下面的defer函数调用会最先执行，其次是写在它上边、与它距离最近的defer函数调用，以此类推，最上边的defer函数调用最后一个执行。
 
