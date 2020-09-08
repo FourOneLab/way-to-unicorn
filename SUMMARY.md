@@ -1,20 +1,29 @@
 # Summary
 
 * [Introduction](README.md)
-* [Part I 操作系统](part1-operation-system)
-  * [Linux](part1-operation-system/linux)
-  * [CPU](part1-operation-system/cpu)
-  * [内存](part1-operation-system/memory)
-  * [进程与线程](part1/)
-* [Part II 计算机网络](part2-network)
-  * [HTTP](part2-network/http)
-  * [TCP/TP](part2-network/tcp-ip)
+* [Part I 数学基础](part1-mathematics)
+  * [基础](part1-mathematics/01-基础.md)
+  * [概率统计](part1-mathematics/02-概率统计.md)
+  * [线性代数](part1-mathematics/03-线性代数.md)
+* [Part II 计算机基础](part2-operation-system)
+  * [Linux操作系统]
+  * [指令与运算](part2-operation-system/01-指令与运算.md)
+  * [处理器](part2-operation-system/02-处理器.md)
+  * [进程管理](part2-operation-system/03-进程管理.md)
+  * [内存管理](part2-operation-system/04-内存管理.md)
+  * [文件系统](part2-operation-system/05-文件系统.md)
+  * [输入输出系统](part2-operation-system/06-输入输出系统.md)
+  * [进程间通信](part2-operation-system/07-进程间通信.md)
+  * [网络系统]
+    * [HTTP]
+    * [TCP/TP]
 * [Part III 数据结构与算法](part3-data-structures-and-algorithms)
   * [框架思维](part3-data-structures-and-algorithms/01-框架思维.md)
   * [复杂度分析](part3-data-structures-and-algorithms/02-复杂度分析.md)
   * [数据结构]
   * [算法思维]
 * [Part IV 编程语言](part4-programming-language)
+  * [编程范式]
   * [Golang](part4-programming-language/golang)
   * [Shell](part4-programming-language/shell)
     * [速查表](part4-programming-language/shell/01-速查表.md)
@@ -38,6 +47,5 @@
     * [详解](part4-programming-language/awk/08-详解.md)
 * [Part V 工具](part5-tool)
   * [Git](part5-tool/git)
-  * [Docker](part5-tool/docker)
-* [Part VI 架构设计](part6-architecture-design)
-* [Part VII 框架](part7-framework)
+* [Part VI 分布式系统]
+* [Part VII 云原生](part7-cloud-native)
