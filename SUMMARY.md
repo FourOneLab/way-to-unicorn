@@ -65,6 +65,7 @@
       * [字符串](04-编程语言/golang/21-strings.md)
       * [字符编码](04-编程语言/golang/20-Unicode.md)
     * [核心篇]
+      * [语句执行流程](04-编程语言/golang/13-语句执行规则.md)
       * [通道](04-编程语言/golang/08-通道.md)
       * [同步](04-编程语言/golang/17-sync.md)
       * [原子操作](04-编程语言/golang/18-atomic.md)
