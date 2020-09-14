@@ -73,7 +73,7 @@
     * [核心篇]
       * [语句执行流程](04-编程语言/golang/13-语句执行规则.md)
       * [通道](04-编程语言/golang/08-通道.md)
-      * [同步](04-编程语言/golang/17-sync.md)
+      * [同步](04-编程语言/golang/17-同步-sync.md)
       * [原子操作](04-编程语言/golang/18-atomic.md)
       * [上下文](04-编程语言/golang/19-context.md)
       * [io](04-编程语言/golang/23-io.md)
