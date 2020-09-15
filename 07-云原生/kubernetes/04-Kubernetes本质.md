@@ -1,16 +1,4 @@
----
-title: 04-Kubernetes本质
-date: 2020-04-14T10:09:14.158627+08:00
-draft: false
----
-
-- [0.1. Kubernetes架构](#01-kubernetes架构)
-  - [0.1.1. Kubernetes要解决的问题是什么](#011-kubernetes要解决的问题是什么)
-    - [0.1.1.1. 控制节点（Master）](#0111-控制节点master)
-    - [0.1.1.2. 计算节点（Node）](#0112-计算节点node)
-  - [0.1.2. Kubernetes对容器常见的“访问”进行了分类](#012-kubernetes对容器常见的访问进行了分类)
-  - [0.1.3. Kubernetes对容器的运行形态进行分类](#013-kubernetes对容器的运行形态进行分类)
-- [0.2. 总结](#02-总结)
+# Kubernetes本质
 
 > "容器"，实际上是一个由Linux Namespace、Linux Cgroups和rootfs三种技术构建出来的进程的隔离环境。
 
@@ -40,9 +28,9 @@ draft: false
 
 ![image](/images/google-stack.png)
 
-## 0.1. Kubernetes架构
+## Kubernetes架构
 
-### 0.1.1. Kubernetes要解决的问题是什么
+### Kubernetes要解决的问题是什么
 
 编排？调度？容器云？集群管理？
 
@@ -55,7 +43,7 @@ draft: false
 
 Kubernetes由Master和Node两种节点组成，分别对应这控制节点和计算节点。
 
-#### 0.1.1.1. 控制节点（Master）
+#### 控制节点（Master）
 
 **出发点**：如何编排、管理、调度用户提交的作业。
 
@@ -67,7 +55,7 @@ Kubernetes由Master和Node两种节点组成，分别对应这控制节点和计
 
 整个集群的持久化数据，由kube-apiserver处理后保存到Etcd中。
 
-#### 0.1.1.2. 计算节点（Node）
+#### 计算节点（Node）
 
 - kubelet，与容器运行时（比如Docker项目）交互，这个交互所依赖的是CRI（Container Runtime Interface）的远程调用接口。这个接口定义了**容器运行时各项核心操作**，比如：**启动一个容器需要的所有参数**。具体的容器运行时，比如Docker一般通过OCI规范与底层的Linux操作系统进行交互。也就是将CRI请求翻译成对Linux操作系统的调用（操作Linux Namespace和Cgroups等）。
 
@@ -98,7 +86,7 @@ Kubernetes由Master和Node两种节点组成，分别对应这控制节点和计
 
 > 所以，Kubernetes项目最主要的设计思想是：**从更宏观的角度，以统一的方式来定义任务之间的各种关系，并且为将来支持更多种类的关系保留余地**。
 
-### 0.1.2. Kubernetes对容器常见的“访问”进行了分类
+### Kubernetes对容器常见的“访问”进行了分类
 
 - 常见的“紧密交互”关系：应用之间需要非常频繁的交互和访问或者通过本地文件进行信息交换。常规环境下，这些应用会被部署在**同一台服务器**，通过localhost通信，通过本地磁盘交换文件。在Kubernetes中，这些容器会被划分为一个Pod，Pod中的容器共享**同一个Network Namespace**、**同一组数据卷**，从而达到高效交换信息的目的。
 
@@ -112,7 +100,7 @@ Kubernetes由Master和Node两种节点组成，分别对应这控制节点和计
 
 - 不同Pod之间不仅有访问关系，还要求发起时加上授权信息。那么如何实现？使用Secret对象，它其实是**一个保存在Etcd里的键值对数据**。把授权信息以Secret的方式存在Etcd里，**Kubernetes会在指定的Pod启动时，自动把Secret里的数据以Volume的方式挂载到容器里**。这样就可以使用授权信息进行容器之间的访问。
 
-### 0.1.3. Kubernetes对容器的运行形态进行分类
+### Kubernetes对容器的运行形态进行分类
 
 1. Pod
 2. 基于Pod改进的对象： Job，用来描述一次性运行的Pod（比如，大数据任务）。 CronJob，用于描述定时任务。DaemonSet，用来描述每个宿主机上必须且只能运行一个副本的守护进程服务
@@ -124,7 +112,7 @@ Kubernetes推崇的做法：
 
 这就是所谓的**声明式API**，这些API对应的“编排对象”和“服务对象”，都是kubernetes项目中的API对象。
 
-## 0.2. 总结
+## 总结
 
 - 过去很多集群管理项目（Yarn、Mesos、Swarm）所擅长的是把一个容器，按照**某种规则**，放置在**某个最佳节点上**运行起来，这种功能称为“**调度**”。
 - Kubernetes擅长的是按照**用户意愿**和整个系统的规则，**完全自动化地处理好容器之间的各种关系**，这种功能称为“**编排**”。
