@@ -14,9 +14,11 @@
 
 [Big-O Algorithm](https://www.bigocheatsheet.com/)
 
-[algorithm-pattern](https://greyireland.gitbook.io/algorithm-pattern/)
+[algo](https://github.com/wangzheng0822/algo)
 
-[labuladong的算法小抄](https://labuladong.gitbook.io/algo/)
+[algorithm-pattern](https://github.com/greyireland/algorithm-pattern)
+
+[labuladong的算法小抄](https://github.com/labuladong/fucking-algorithm)
 
 [LeetCode in Go](https://github.com/halfrost/LeetCode-Go)
 
@@ -31,6 +33,8 @@
 [Go Developer Roadmap](https://github.com/Alikhll/golang-developer-roadmap)
 
 [go_command_tutorial](https://github.com/hyper0x/go_command_tutorial)
+
+[Go Example CN](https://github.com/Promacanthus/gen)
 
 [Go-advice](https://github.com/cristaloleg/go-advice)
 
