@@ -122,5 +122,6 @@
   * [容器编排](07-云原生/kubernetes/06-容器编排.md)
   * [权限控制](07-云原生/kubernetes/07-权限控制.md)
   * [容器网络](07-云原生/kubernetes/08-容器网络.md)
+  * [持久化存储](07-云原生/kubernetes/09-持久化存储.md)
   * [Kubernetes垃圾回收](07-云原生/kubernetes/Kubernetes-GC.md)
 * [第八部分 架构设计](08-架构设计)
