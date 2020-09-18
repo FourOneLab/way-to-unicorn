@@ -1,43 +1,47 @@
----
-title: 19-context
-date: 2019-11-25T11:15:47.526182+08:00
-draft: false
----
-
-- [0.1. 使用Context包实现一对多goroutine协作流程](#01-使用context包实现一对多goroutine协作流程)
-  - [0.1.1. 撤销信号](#011-撤销信号)
-  - [0.1.2. 撤销信号在上下文树中的传播](#012-撤销信号在上下文树中的传播)
-  - [0.1.3. 通过Context携带数据，并获取数据](#013-通过context携带数据并获取数据)
-- [0.2. 总结](#02-总结)
+# Context
 
 使用WaitGroup可以实现一对多的goroutine协作流程同步，如果一开始不能确定子任务的goroutine数量，那么使用WaitGroup值来协调它们和分发子任务的goroutine就存在一定的风险。
 
 > 一个解决方案是：分批地启用执行子任务的goroutine。
 
-## 0.1. 使用Context包实现一对多goroutine协作流程
+```go
+type Context interface {
+    Deadline() (deadline time.Time, ok bool)
+    Done() <-chan struct{}
+    Err() error
+    Value(key interface{}) interface{}
+}
+```
+
+- Deadline：返回 Context 被取消的时间，也就是完成工作的截止日期
+- Done：返回一个 channel，这个 channel 会在当前工作完成或者上下文被取消之后关闭，多次调用 Done 方法会返回同一个 channel
+- Err：返回 Context 结束的原因，它只会在 Done 返回的 channel 被关闭时才会返回非空的值，如果 Context 被取消，会返回 Canceled 错误；如果 Context 超时，会返回 DeadlineExceeded 错误
+- Value：可用于从 Context 中获取传递的键值信息
+
+## 使用Context包实现一对多goroutine协作流程
 
 ```go
 func coordinateWithContext() {
- total := 12
- var num int32
- fmt.Printf("The number: %d [with context.Context]\n", num)
-//  调用context.Background和context.WithCancel创建一个可撤销的context对象ctx和一个撤销函数cancelFunc
- ctx, cancelFunc := context.WithCancel(context.Background())
- for i := 1; i <= total; i++ {
-    //  每次迭代创建一个新的goroutine
-  go addNum(&num, i, func() {
-    //   在子goroutine中原子性的Load num变量
-   if atomic.LoadInt32(&num) == int32(total) {
-    // 如果num与total相等，表示所有子goroutine执行完成
-    // 调用context的撤销函数
-    cancelFunc()
-   }
-  })
- }
-// 调用Done函数，并试图针对该函数返回的通道进行接收操作
-// 一旦cancelFunc被调用，针对该通道的接收操作就会马上结束
- <-cxt.Done()
- fmt.Println("End.")
+	total := 12
+	var num int32
+	fmt.Printf("The number: %d [with context.Context]\n", num)
+	// 调用context.Background和context.WithCancel创建一个可撤销的context对象ctx和一个撤销函数cancelFunc
+	ctx, cancelFunc := context.WithCancel(context.Background())
+	for i := 1; i <= total; i++ {
+		//  每次迭代创建一个新的goroutine
+		go addNum(&num, i, func() {
+			// 在子goroutine中原子性的Load num变量
+			if atomic.LoadInt32(&num) == int32(total) {
+				// 如果num与total相等，表示所有子goroutine执行完成
+				// 调用context的撤销函数
+				cancelFunc()
+			}
+		})
+	}
+	// 调用Done函数，并试图针对该函数返回的通道进行接收操作
+	// 一旦cancelFunc被调用，针对该通道的接收操作就会马上结束
+	<-ctx.Done()
+	fmt.Println("End.")
 }
 ```
 
@@ -58,7 +62,7 @@ context包中包含四个用于衍生context值的函数：
 
 这些函数的第一个参数类型都是`context.Context`，名称都是parent，这个位置上的参数都是它们将产生的Context值的父值。
 
-### 0.1.1. 撤销信号
+### 撤销信号
 
 Context接口类型中有两个方法与撤销相关：
 
@@ -78,7 +82,7 @@ Context接口类型中有两个方法与撤销相关：
 
 这是创建Context包和Context类型时的**初衷**。
 
-### 0.1.2. 撤销信号在上下文树中的传播
+### 撤销信号在上下文树中的传播
 
 Context包中包含四个用于衍生Context值的函数，其中的`WithCancel`，`WithDeadline`，`WithTimeout`都是被用来基于给定的Context值产生可撤销的子值。
 
@@ -89,7 +93,7 @@ func WithCancel(parent Context) (ctx Context, cancel CancelFunc)
 
 撤销函数被调用后，Context值会先关闭它内部的接收通道，即Done方法会返回的那个通道。然后，它会向它的所有子值（或者说子节点）传达撤销信号。这些子值会继续把撤销信号传播下去，最后这个context值会断开它与其父值之间的关联。
 
-![images](/images/context.png)
+![Context树](/images/context.png)
 
 ```go
 func WithDeadline(parent Context, d time.Time) (Context, CancelFunc)
@@ -100,7 +104,7 @@ func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)
 
 **注意，通过调用`context.WithValue`函数得到的Context值是不可撤销的。撤销信号在被传播时，如遇到它们则会直接跨过，并试图将信号直接传给它们的子值**。
 
-### 0.1.3. 通过Context携带数据，并获取数据
+### 通过Context携带数据，并获取数据
 
 ```go
 func WithValue(parent Context, key, val interface{}) Context
@@ -116,7 +120,7 @@ Context类型的Value方法就是被用来获取数据的，在调用含数据�
 
 Context接口并没有提供改变数据的方法，因此在通常情况下，只能通过上下文树中添加含数据的Context值来存储新的数据，或者通过撤销此种值的父值丢弃相应的数据。**如果存储在这里的数据可以从外部改变，那么必须自行保证安全**。
 
-## 0.2. 总结
+## 总结
 
 Context类型的实际值分为三种：
 
