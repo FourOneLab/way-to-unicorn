@@ -88,8 +88,8 @@ recover函数的调用没有任何作用，甚至都没有机会执行，因为p
 
 defer语句是被用来延迟执行代码的，延迟到该语句所在的函数即将执行结束的那一刻，无论结束执行的原因是什么。有一些调用表达式不能出现在defer语句中：
 
-- 针对Go语言内建函数的调用表达式
-- 针对unsafe包中的函数的调用表达式
+- 针对Go语言**内建函数**的调用表达式
+- 针对**unsafe包**中的函数的调用表达式
 
 在defer语句中，被调用的函数可以是有名称的，也可以是匿名的，把这里的函数叫做defer函数或者延迟函数，**注意，被延迟执行的是defer函数，而不是defer语句**。
 
@@ -111,7 +111,7 @@ func main() {
 		if p := recover(); p != nil {
 			fmt.Printf("panic: %s\n", p)
 		}
-		fmt.Println("Exit defer function.")
+		fmt.Println("；Exit defer function.")
 	}()
 	// 引发 panic
 	panic(errors.New("something wrong"))
@@ -125,10 +125,137 @@ func main() {
 
 在一个函数中，defer函数调用的执行顺序与它们分别所属的defer语句的出现顺序（执行顺序）完全相反。当一个函数即将结束执行时，其中写在最下面的defer函数调用会最先执行，其次是写在它上边、与它距离最近的defer函数调用，以此类推，最上边的defer函数调用最后一个执行。
 
-> 如果一个for语句中包含一个defer语句，那么defer语句的执行次数，取决于循环的迭代次数，并且同一个defer语句被执行一次，其中的defer函数调用就会产生一次，而且这些函数调用同样不会被立即执行。
+如果一个for语句中包含一个defer语句，那么defer语句的执行次数，取决于循环的迭代次数，并且同一个defer语句被执行一次，其中的defer函数调用就会产生一次，而且这些函数调用同样不会被立即执行。
 
 ### defer语句执行时发生的事情
 
-在defer语句每次被执行的时候，Go语言会把它携带的defer函数以及其参数值另行存储到一个先进先出队列中。这个队列与defer语句所属的函数是对应的，相当于一个栈。
+在defer语句每次被执行的时候，Go语言会把它携带的defer函数以及其参数值另行存储到一个后进先出的栈中。
 
-需要执行某个函数中的defer函数调用的时候，Go语言会先拿到对应的队列，然后从该队列中一个一个地取出defer函数及其参数值，并逐个执行调用。
+需要执行某个函数中的defer函数调用的时候，Go语言会先拿到对应的栈，然后从该栈中一个一个地取出defer函数及其参数值，并逐个执行调用。
+
+### defer内部实现
+
+Go 运行时（runtime）使用一个链表来实现 LIFO。实际上，一个 defer 结构体持有一个指向下一个要被执行的 defer 结构体的指针：
+
+```go
+type _defer struct {
+   siz     int32
+   started bool
+   sp      uintptr
+   pc      uintptr
+   fn      *funcval
+   _panic  *_panic
+   link    *_defer // 下一个要被执行的延迟函数
+```
+
+当一个新的 defer 方法被创建的时候，它被附加到当前的 Goroutine 上，然后之前的 defer 方法作为下一个要执行的函数被链接到新创建的方法上（可以理解为从链表的表头开始插入新的defer语句中的函数）：
+
+```go
+func newdefer(siz int32) *_defer {
+   var d *_defer
+   gp := getg() // 获取当前 goroutine
+   [...]
+   // 延迟列表现在被附加到新的 _defer 结构体
+   d.link = gp._defer
+   gp._defer = d // 新的结构现在是第一个被调用的
+   return d
+}
+```
+
+现在，后续调用会从栈的顶部依次出栈延迟函数：
+
+```go
+func deferreturn(arg0 uintptr) {
+   gp := getg() // 获取当前 goroutine
+   d:= gp._defer // 拷贝延迟函数到一个变量上
+   if d == nil { // 如果不存在延迟函数就直接返回
+      return
+   }
+   [...]
+   fn := d.fn // 获取要调用的函数
+   d.fn = nil // 重置函数
+   gp._defer = d.link // 把下一个 _defer 结构体依附到 Goroutine 上
+   freedefer(d) // 释放 _defer 结构体
+   jmpdefer(fn, uintptr(unsafe.Pointer(&arg0))) // 调用该函数
+}
+```
+
+如上，并没有循环地去调用延迟函数，而是一个接一个地出栈。
+
+### 延迟和返回值
+
+延迟函数访问返回的结果的唯一方法是使用**命名返回参数**。
+
+> 如果延迟函数是一个匿名函数，并且所在函数存在命名返回参数，同时该命名返回参数在匿名函数的作用域中，匿名函数可能会在返回参数返回前访问并修改它们。
+
+```go
+func main() {
+   fmt.Printf("with named param, x: %d\n", namedParam())
+   fmt.Printf("without named param, x: %d\n", notNamedParam())
+}
+func namedParam() (x int) {	// 命名返回参数
+   x = 1					// 命名返回参数在匿名函数的作用域中
+   defer func() { x = 2 }()	// 匿名延迟函数
+   return x
+}
+
+func notNamedParam() (int) {
+   x := 1
+   defer func() { x = 2 }()	// 匿名延迟函数
+   return x
+}
+with named param, x: 2
+without named param, x: 1
+```
+
+这样的话，可以将延迟函数和recover函数混合使用。
+
+> recover 函数是一个用于重新获取对恐慌（panicking）goroutine 控制的内置函数。**recover函数仅在延迟函数内部时才有效**。
+
+_defer 结构体链接了一个_panic 属性，该属性在 panic 调用期间被链接：
+
+```go
+func gopanic(e interface{}) {
+   [...]
+   var p _panic
+   [...]
+   d := gp._defer // 当前附加的 defer 函数
+   [...]
+   d._panic = (*_panic)(noescape(unsafe.Pointer(&p)))
+   [...]
+}
+```
+
+```go
+func main() {
+   fmt.Printf("error from err1: %v\n", err1())
+   fmt.Printf("error from err2: %v\n", err2())
+}
+
+func err1() error {
+   var err error
+
+   defer func() {
+      if r := recover(); r != nil {
+         err = errors.New("recovered")
+      }
+   }()
+   panic(`foo`)
+
+   return err
+}
+
+func err2() (err error) {	// 命名返回参数
+   defer func() {	// recover在defer内部
+      if r := recover(); r != nil {
+         err = errors.New("recovered")
+      }
+   }()
+   panic(`foo`)
+
+   return err
+}
+// output
+error from err1: <nil>
+error from err2: recovered
+```
