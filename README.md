@@ -1,7 +1,5 @@
 # way-to-unicorn
 
-掌握这些知识，帮你进入独角兽企业。
-
 ## 优秀资源推荐
 
 ### 计算机基础
@@ -69,6 +67,8 @@
 [微服务：从设计到部署](https://github.com/DocsHome/microservices)
 
 ### 云原生
+
+[云原生技术公开课](https://edu.aliyun.com/roadmap/cloudnative?accounttraceid=f1fbbc5ec5d2426f96553147b415daa3dfsv#J_8556687180)
 
 [Awesome Cloud Native](https://jimmysong.io/awesome-cloud-native/)
 
