@@ -23,5 +23,11 @@
 - [最小栈](https://leetcode-cn.com/problems/min-stack/)
 - [字符串解码](https://leetcode-cn.com/problems/decode-string/)
 - [用栈实现队列](https://leetcode-cn.com/problems/implement-queue-using-stacks/description/)
+
+## 队列
+
 - [用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/description/)
+
+## 堆
+
 - [数据流中的第K大元素](https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/)
