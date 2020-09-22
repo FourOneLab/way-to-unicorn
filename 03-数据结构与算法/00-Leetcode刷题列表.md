@@ -27,6 +27,11 @@
 ## 队列
 
 - [用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/description/)
+- [滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+
+## 哈希表
+
+- [有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
 
 ## 堆
 
