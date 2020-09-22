@@ -511,6 +511,13 @@ cat /projected-volume/pass
 
 其实，这是 kubelet 组件在定时维护这些Volume。需要注意的是，**这个更新可能会有一定的延时**。**所以在编写应用程序时，在发起数据库连接的代码处写好重试和超时的逻辑，绝对是个好习惯。**
 
+Secret 类型种类比较多，下面列了常用的四种类型：
+
+- 第一种是 Opaque，它是普通的 Secret 文件；
+- 第二种是 service-account-token，是用于 service-account 身份认证用的 Secret；
+- 第三种是 dockerconfigjson，这是拉取私有仓库镜像的用的一种 Secret；
+- 第四种是 bootstrap.token，是用于节点接入集群校验用的 Secret。
+
 #### ConfigMap
 
 与 Secret 类似的是 ConfigMap，它与 Secret 的区别在于，ConfigMap 保存的是**不需要加密的、应用所需的配置信息**。而 ConfigMap 的用法几乎与 Secret 完全相同：
@@ -547,6 +554,14 @@ metadata:
 ```
 
 > kubectl get -o yaml 这样的参数，会将指定的 Pod API 对象以 YAML 的方式展示出来。
+
+现在对 ConfigMap 的使用做一个总结，以及它的一些注意点，注意点一共列了以下五条：
+
+- 第一个注意点是ConfigMap 文件的大小。虽然说 ConfigMap 文件没有大小限制，但是在 ETCD 里面，数据的写入是有大小限制的，现在是限制在 1MB 以内；
+- 第二个注意点是 pod 引入 ConfigMap 的时候，必须是相同的 Namespace 中的 ConfigMap，`ConfigMap.metadata` 里面是有 namespace 字段的；
+- 第三个是 pod 引用的 ConfigMap。假如这个 ConfigMap 不存在，那么这个 pod 是无法创建成功的，其实这也表示在创建 pod 前，必须先把要引用的 ConfigMap 创建好；
+- 第四点就是使用 envFrom 的方式。把 ConfigMap 里面所有的信息导入成环境变量时，如果 ConfigMap 里有些 key 是无效的，比如 key 的名字里面带有数字，那么这个环境变量其实是不会注入容器的，它会被忽略。但是这个 pod 本身是可以创建的。这个和第三点是不一样的方式，是 ConfigMap 文件存在基础上，整体导入成环境变量的一种形式；
+- 最后一点是：只有通过 K8s api 创建的 pod 才能使用 ConfigMap，比如说通过用命令行 kubectl 来创建的 pod，肯定是可以使用 ConfigMap 的，但其他方式创建的 pod，比如说 kubelet 通过 manifest 创建的 static pod，它是不能使用 ConfigMap 的。
 
 #### Downward API
 
@@ -675,6 +690,26 @@ ca.crt namespace  token
 
 - 除了这个默认的Service Account外，很多时候需要创建自己定义的 Service Account，来对应不同的权限设置
 - Pod里的容器就可以通过挂载这些Service Account对应的ServiceAccountToken，来使用这些自定义的授权信息
+
+#### SecurtyContext
+
+SecurityContext 主要是用于限制容器的一个行为，它能保证系统和其他容器的安全。这一块的能力不是 Kubernetes 或者容器 runtime 本身的能力，而是 Kubernetes 和 runtime 通过用户的配置，最后下传到内核里，再通过内核的机制让 SecurityContext 来生效。
+
+SecurityContext 主要分为三个级别：
+
+- 第一个是容器级别，仅对容器生效；
+- 第二个是 pod 级别，对 pod 里所有容器生效；
+- 第三个是集群级别，就是 PSP，对集群内所有 pod 生效。
+
+权限和访问控制设置项，现在一共列有七项（这个数量后续可能会变化）：
+
+- 第一个就是通过用户 ID 和组 ID 来控制文件访问权限；
+- 第二个是 SELinux，它是通过策略配置来控制用户或者进程对文件的访问控制；
+- 第三个是特权容器；
+- 第四个是 Capabilities，它也是给特定进程来配置一个 privileged 能力；
+- 第五个是 AppArmor，它也是通过一些配置文件来控制可执行文件的一个访问控制权限，比如说一些端口的读写；
+- 第六个是一个对系统调用的控制；
+- 第七个是对子进程能否获取比父亲更多的权限的一个限制。
 
 #### livenessProbe
 
