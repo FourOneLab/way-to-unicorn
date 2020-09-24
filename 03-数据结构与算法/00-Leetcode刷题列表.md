@@ -38,3 +38,9 @@
 ## 堆
 
 - [数据流中的第K大元素](https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/)
+
+## 树
+
+- [验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)
+- [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+- [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
