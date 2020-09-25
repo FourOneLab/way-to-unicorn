@@ -67,7 +67,7 @@
       * [接口类型](04-编程语言/golang/11-接口类型.md)
       * [流程控制语句](04-编程语言/golang/14-流程控制语句.md)
       * [错误处理](04-编程语言/golang/15-错误处理.md)
-      * [异常和恢复](04-编程语言/golang/16-panic&recover&defer.md)
+      * [panic、recover、defer](04-编程语言/golang/16-panic&recover&defer.md)
       * [字节](04-编程语言/golang/22-bytes.md)
       * [字符串](04-编程语言/golang/21-strings.md)
       * [字符编码](04-编程语言/golang/20-Unicode.md)
