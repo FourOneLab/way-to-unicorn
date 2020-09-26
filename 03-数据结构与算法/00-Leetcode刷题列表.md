@@ -43,6 +43,8 @@
 - [字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 - [两数之和](https://leetcode-cn.com/problems/two-sum/)
 - [三数之和](https://leetcode-cn.com/problems/3sum/)
+- [无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+- [前K个高频单词](https://leetcode-cn.com/problems/top-k-frequent-words/)
 
 ## 堆
 
@@ -58,6 +60,11 @@
 - [二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree)
 - [二叉树的最小深度](https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/)
 - [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+- [二叉树的锯齿形层次遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
+- [对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
+- [二叉搜索树节点最小距离](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/)
+- [二叉树的所有路径](https://leetcode-cn.com/problems/binary-tree-paths/)
+- [二叉搜索树的范围和](https://leetcode-cn.com/problems/range-sum-of-bst/)
 
 ## 递归
 
@@ -69,3 +76,7 @@
 
 - [x的平方根](https://leetcode-cn.com/problems/sqrtx/)
 - [排列硬币](https://leetcode-cn.com/problems/arranging-coins/)
+
+## 图
+
+- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
