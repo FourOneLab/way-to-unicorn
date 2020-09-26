@@ -1,8 +1,5 @@
----
-title: 20-Unicode
-date: 2019-11-25T11:15:47.526182+08:00
-draft: false
----
+# Unicode
+
 ## Golang字符编码基础
 
 Golang的标识符可以包含“任何Unicode编码可以表示的字母字符”。
