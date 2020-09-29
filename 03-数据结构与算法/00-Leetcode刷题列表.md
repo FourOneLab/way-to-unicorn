@@ -59,24 +59,72 @@
 - [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
 - [二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree)
 - [二叉树的最小深度](https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/)
-- [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
-- [二叉树的锯齿形层次遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
 - [对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
 - [二叉搜索树节点最小距离](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/)
 - [二叉树的所有路径](https://leetcode-cn.com/problems/binary-tree-paths/)
 - [二叉搜索树的范围和](https://leetcode-cn.com/problems/range-sum-of-bst/)
 
+## 图
+
+- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+
+## Trie树
+
+- [词典中最长的单词](https://leetcode-cn.com/problems/longest-word-in-dictionary/)
+- [实现 Trie (前缀树)](https://leetcode-cn.com/problems/implement-trie-prefix-tree/)
+
 ## 递归
 
 - [第N个泰波那契数](https://leetcode-cn.com/problems/n-th-tribonacci-number/)
-- [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 - [括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
+
+## 分治算法
+
+- [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/)
+- [多数元素](https://leetcode-cn.com/problems/majority-element/)
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+- [搜索二维矩阵 II](https://leetcode-cn.com/problems/search-a-2d-matrix-ii/)
+
+## 深度优先搜索
+
+- [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
+- [找到最终的安全状态](https://leetcode-cn.com/problems/find-eventual-safe-states/)
+
+## 广度优先搜索
+
+- [N叉树的层序遍历](https://leetcode-cn.com/problems/n-ary-tree-level-order-traversal/)
+- [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+- [二叉树的层次遍历 II](https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/)
+- [二叉树的锯齿形层次遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
+- [最小高度树](https://leetcode-cn.com/problems/minimum-height-trees/)
+- [扫雷游戏](https://leetcode-cn.com/problems/minesweeper/)
 
 ## 二分查找
 
 - [x的平方根](https://leetcode-cn.com/problems/sqrtx/)
 - [排列硬币](https://leetcode-cn.com/problems/arranging-coins/)
 
-## 图
+## 贪心算法
 
-- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+- [分发饼干](https://leetcode-cn.com/problems/assign-cookies/)
+- [买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+## 剪枝
+
+- [有效的数独](https://leetcode-cn.com/problems/valid-sudoku/)
+
+## 回溯算法
+
+- [字母大小写全排列](https://leetcode-cn.com/problems/letter-case-permutation/)
+- [组合](https://leetcode-cn.com/problems/combinations/)
+- [子集](https://leetcode-cn.com/problems/subsets/)
+- [全排列](https://leetcode-cn.com/problems/permutations/)
+
+## 动态规划
+
+- [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+- [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+- [打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+- [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+- [不同路径](https://leetcode-cn.com/problems/unique-paths/)
+- [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
