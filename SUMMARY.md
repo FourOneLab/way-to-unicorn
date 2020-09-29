@@ -51,42 +51,35 @@
 * [第四部分 编程语言](04-编程语言)
   * [编程范式]
   * [Golang](04-编程语言/golang)
-    * [工具篇]
-      * [VS Code]
-      * [GOPATH和工作区](04-编程语言/golang/01-GOPATH和工作区.md)
-      * [命令源文件](04-编程语言/golang/02-命令源码文件.md)
-      * [库源文件](04-编程语言/golang/03-库源码文件.md)
-    * [基础篇]
-      * [程序实体](04-编程语言/golang/04-程序实体.md)
-      * [数组和切片](04-编程语言/golang/05-数组和切片.md)
-      * [容器](04-编程语言/golang/06-容器.md)
-      * [字典](04-编程语言/golang/07-字典.md)
-      * [函数](04-编程语言/golang/09-函数.md)
-      * [结构体类型](04-编程语言/golang/10-结构体类型.md)
-      * [接口类型](04-编程语言/golang/11-接口类型.md)
-      * [流程控制语句](04-编程语言/golang/14-流程控制语句.md)
-      * [错误处理](04-编程语言/golang/15-错误处理.md)
-      * [panic、recover、defer](04-编程语言/golang/16-panic&recover&defer.md)
-      * [字节](04-编程语言/golang/22-bytes.md)
-      * [字符串](04-编程语言/golang/21-strings.md)
-      * [字符编码](04-编程语言/golang/20-Unicode.md)
-    * [核心篇]
-      * [语句执行流程](04-编程语言/golang/13-语句执行规则.md)
-      * [通道](04-编程语言/golang/08-通道.md)
-      * [同步](04-编程语言/golang/17-同步-sync.md)
-      * [原子操作](04-编程语言/golang/18-atomic.md)
-      * [上下文](04-编程语言/golang/19-context.md)
-      * [io](04-编程语言/golang/23-io.md)
-      * [bufio](04-编程语言/golang/24-bufio.md)
-      * [os](04-编程语言/golang/25-os.md)
-      * [net](04-编程语言/golang/26-net.md)
-      * [测试](04-编程语言/golang/测试规则与流程.md)
-    * [高级篇]
-      * [内存管理和垃圾回收](04-编程语言/golang/内存管理和垃圾回收.md)
-      * [cgo与汇编]
-      * [RPC与序列化]
-      * [Web]
-      * [分布式]
+    * [VS Code]()
+    * [GOPATH和工作区](04-编程语言/golang/00-Go开篇.md)
+    * [数组和切片](04-编程语言/golang/05-数组和切片.md)
+    * [容器](04-编程语言/golang/06-容器.md)
+    * [字典](04-编程语言/golang/07-字典.md)
+    * [函数](04-编程语言/golang/09-函数.md)
+    * [结构体类型](04-编程语言/golang/10-结构体类型.md)
+    * [接口类型](04-编程语言/golang/11-接口类型.md)
+    * [流程控制语句](04-编程语言/golang/14-流程控制语句.md)
+    * [错误处理](04-编程语言/golang/15-错误处理.md)
+    * [panic、recover、defer](04-编程语言/golang/16-panic&recover&defer.md)
+    * [字节](04-编程语言/golang/22-bytes.md)
+    * [字符串](04-编程语言/golang/21-strings.md)
+    * [字符编码](04-编程语言/golang/20-Unicode.md)
+    * [语句执行流程](04-编程语言/golang/13-语句执行规则.md)
+    * [通道](04-编程语言/golang/08-通道.md)
+    * [同步](04-编程语言/golang/17-同步-sync.md)
+    * [原子操作](04-编程语言/golang/18-atomic.md)
+    * [上下文](04-编程语言/golang/19-context.md)
+    * [io](04-编程语言/golang/23-io.md)
+    * [bufio](04-编程语言/golang/24-bufio.md)
+    * [os](04-编程语言/golang/25-os.md)
+    * [net](04-编程语言/golang/26-net.md)
+    * [测试](04-编程语言/golang/测试规则与流程.md)
+    * [内存管理和垃圾回收](04-编程语言/golang/内存管理和垃圾回收.md)
+    * [cgo与汇编]
+    * [RPC与序列化]
+    * [Web]
+    * [分布式]
   * [Shell](04-编程语言/shell)
     * [速查表](04-编程语言/shell/01-速查表.md)
     * [编写指南](04-编程语言/shell/02-shell编写指南.md)
