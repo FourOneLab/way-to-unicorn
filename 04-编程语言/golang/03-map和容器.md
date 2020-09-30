@@ -2,6 +2,22 @@
 
 ## Map
 
+```go
+type Map struct {
+	key, elem Type
+}
+
+// Type表示Go的类型
+// 所有类型都实现Type接口。
+type Type interface {
+	// Underlying 返回类型的基础类型
+	Underlying() Type
+
+	// String 返回类型的字符串表示形式
+	String() string
+}
+```
+
 map中存储的不是单一值的集合，而是键值对的集合。
 
 > 一个键和一个值，分别代表了一个从属于某一类型的独立值，把它们两个捆绑在一起就是一个键值对。
