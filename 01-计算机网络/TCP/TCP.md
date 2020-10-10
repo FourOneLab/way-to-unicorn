@@ -14,7 +14,7 @@ curl http://192.168.3.200
 
 停止tcpdump的运行，将抓取的数据用wireshark打开。
 
-![image](/images/2020-06-17_10-43.png)
+![wireshark解析抓取的数据包](/images/2020-06-17_10-43.png)
 
 从图中看出数据包分为三个部分：
 
@@ -24,11 +24,11 @@ curl http://192.168.3.200
 
 使用wireshark的时序图（Statics->Flow Graph->TCP Flows）进一步分析：
 
-![image](/images/2020-06-17_13-16.png)
+![wireshark时序图](/images/2020-06-17_13-16.png)
 
 理论上的三次握手和四次挥手过程：
 
-![image](/images/ezgif.com-webp-to-jpg.jpg)
+![TCP握手和挥手过程](/images/ezgif.com-webp-to-jpg.jpg)
 
 对比发现，理论上挥手是四次，而抓包的数据显示挥手是三次。因为，服务器端收到客户端的 `FIN` 后，服务器端同时也要关闭连接，这样就可以把 `ACK` 和 `FIN` 合并到一起发送，节省了一个包，变成了“三次挥手”。
 
@@ -47,7 +47,7 @@ curl http://192.168.3.200
 
 `curl`请求服务器近1分钟后返回`connection timed out`。
 
-![image](/images/2020-06-17_13-27.png)
+![第一次握手 SYN 丢包](/images/2020-06-17_13-27.png)
 
 客户端发起了 `SYN` 包后，一直没有收到服务端的 `ACK` ，所以一直超时重传了 `5` 次，并且每次 `RTO`超时时间是不同的：
 
@@ -69,13 +69,13 @@ sugoi@sugoi:~$ cat /proc/sys/net/ipv4/tcp_syn_retries
 # 修改这个值会影响重试次数
 ```
 
-### TCP 第二次握手 SYN、ACK 丢包
+### 第二次握手 SYN、ACK 丢包
 
 > 客户端设置防火墙规则丢弃从服务器响应的数据。`iptables -I INPUT -s 192.168.12.36 -j DROP`
 
 `curl`请求服务器近1分钟后返回`connection timed out`。
 
-![image](/images/2020-06-17_13-33.png)
+![第二次握手 SYN、ACK 丢包](/images/2020-06-17_13-33.png)
 
 - **客户端**发起 `SYN` 后，由于防火墙屏蔽了服务端的所有数据包，所以 `curl` 是无法收到服务端的 `SYN`、`ACK`包，当发生超时后，就会重传 `SYN` 包（就是上一节的情况）
 
@@ -94,7 +94,7 @@ sugoi@sugoi:~$ cat /proc/sys/net/ipv4/tcp_synack_retries
 
 将客户端的`tcp_syn_retries`设置为`1`后重新发生请求，这样可以防止客户端多次重传`SYN`后重置服务器的超时计数器。
 
-### TCP 第三次握手 ACK 丢包
+### 第三次握手 ACK 丢包
 
 > 服务器配置防火墙屏蔽客户端TCP报文中标志位是`ACK`的包。`iptables -I INPUT -s 192.168.12.37 -p tcp --tcp-flag ACK ACK -j DROP`
 
@@ -112,7 +112,7 @@ tcp        0      0 192.168.12.337:36008      192.168.12.36:80        ESTAVLISGE
 
 在客户端的`telnet`中输入内容，一段时间后，`telnet`断开连接。
 
-![image](/images/2020-06-17_13-55.png)
+![第三次握手 ACK 丢包](/images/2020-06-17_13-55.png)
 
 1. 客户端发送 `SYN` 包给服务端，服务端收到后，回了个 `SYN`、`ACK` 包给客户端，此时服务端的 TCP 连接处于 `SYN_RECV` 状态
 2. 客户端收到服务端的  `SYN`、`ACK` 包后，给服务端回了个 `ACK` 包，此时客户端的 TCP 连接处于 `ESTABLISHED` 状态
@@ -156,11 +156,11 @@ net.ipv4.tcp_keepalive_probes=9     # 保活探测次数9次，无响应则认�
 
 但是在下一次（在另一个 `TCP` 连接）发起 `HTTP` `GET` 请求时，经历的 `RTT` 也是一样，如下图：
 
-![image](/images/2020-06-17_14-17.png)
+![常规请求](/images/2020-06-17_14-17.png)
 
 在 Linux 3.7 内核版本中，提供了 `TCP Fast Open` 功能，可以减少 `TCP` 连接建立的时延。
 
-![image](/images/2020-06-17_14-19.png)
+![快速建立连接](/images/2020-06-17_14-19.png)
 
 1. 第一次建立连接时，服务端在第二次握手产生一个 `Cookie` （已加密）并通过 `SYN`、`ACK` 包一起发给客户端，客户端缓存这个 `Cookie`，所以第一次发起 `HTTP` `GET` 请求需要 `2` 个 `RTT` 时延；
 
@@ -183,7 +183,7 @@ net.ipv4.tcp_keepalive_probes=9     # 保活探测次数9次，无响应则认�
 
 当接收方收到乱序数据包时，会发送重复的 `ACK`，以使告知发送方要重发该数据包，**当发送方收到 `3` 个重复 `ACK` 时，就会触发快速重传，立该重发丢失数据包**。
 
-![image](/images/2020-06-17_14-30.png)
+![TCP 重复确认和快速重传](/images/2020-06-17_14-30.png)
 
 > SACK（ Selective Acknowledgment 选择性确认），在 TCP 头部「选项」字段里加一个 SACK。Duplicate SACK 又称 D-SACK，其主要使用了 SACK 来告诉「发送方」有哪些数据被重复接收了。
 
@@ -255,11 +255,11 @@ CONFIG_HZ=250
 setsockopt(sock_fd,IPPROTO_TCP,TCP_QUICKACK,(char *)&value,sizeof(int));
 ```
 
-### 延迟确认 和 Nagle 算法混合使用
+### 延迟确认和Nagle算法混合使用
 
 延迟确认 和 Nagle 算法混合使用会产生耗时增长的问题：
 
-![image](/images/2020-06-17_15-44.png)
+![延迟确认和Nagle算法混合使用](/images/2020-06-17_15-44.png)
 
 发送方使用了 Nagle 算法，接收方使用了 TCP 延迟确认会发生如下的过程：
 
