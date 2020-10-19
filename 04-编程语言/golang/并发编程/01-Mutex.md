@@ -1,4 +1,4 @@
-# 基本并发原语（Mutex）
+# Mutex
 
 > 一旦数据被多个线程共享，很可能会产生争用和冲突的情况，这种情况称为**竞态条件（race condition）**，这往往会破坏共享数据的一致性。
 
@@ -11,8 +11,6 @@
 
 这些数据块和代码块的背后都隐含着一种或多种资源（如存储资源，计算资源、I/O资源、网络资源等），把它们看成是共享资源，**同步其实就是在控制多个线程对共享资源的访问**。
 
-## Mutex
-
 常见并发访问问题：
 
 - 多个 goroutine 并发更新同一个资源，像计数器；
@@ -22,7 +20,7 @@
 
 如果没有互斥控制，就会出现一些异常情况，比如计数器的计数不准确、用户的账户可能出现透支、秒杀系统出现超卖、buffer 中的数据混乱，等等，后果都很严重。
 
-### 互斥锁的实现机制
+## 互斥锁的实现机制
 
 互斥锁（排他锁）是并发控制的一个基本手段，是为了避免竞争而建立的一种并发控制机制。在并发编程中，如果程序中的一部分会被并发访问或修改，那么，为了避免并发访问导致的意想不到的结果，这部分程序需要被保护起来，这部分被保护起来的程序，就叫做临界区。
 
@@ -43,7 +41,7 @@ Mutex（mutual exclusion） 是使用最广泛的同步原语（Synchronization 
 - 任务编排。需要 goroutine 按照一定的规律执行，而 goroutine 之间有相互等待或者依赖的顺序关系，我们常常使用 WaitGroup 或者 Channel 来实现。
 - 消息传递。信息交流以及不同的 goroutine 之间的线程安全的数据交流，常常使用 Channel 来实现。
 
-### Mutex使用
+## Mutex使用
 
 在 Go 的标准库中，package sync 提供了锁相关的一系列同步原语，这个 package 还定义了一个 Locker 的接口，Mutex 就实现了这个接口。
 
@@ -304,7 +302,7 @@ func main() {
 
 ```
 
-#### 注意事项
+### 注意事项
 
 - 不要重复锁定互斥锁：
 
@@ -338,7 +336,7 @@ fatal error: all goroutines are asleep - deadlock!
 
 当每个互斥锁都只保护一个临界区或者一组相关临界区可以有效避免死锁。
 
-### Mutex实现
+## Mutex实现
 
 Mutex的架构演进：
 
@@ -347,7 +345,7 @@ Mutex的架构演进：
 3. 第三阶段（2015）：照顾新来的和被唤醒的 goroutine；
 4. 第四阶段（2016）：但是这样会带来饥饿问题，所以目前又加入了饥饿的解决方案。
 
-#### 初版
+### 初版
 
 通过一个 flag 变量，标记当前的锁是否被某个 goroutine 持有。
 
@@ -464,7 +462,7 @@ func (f *Foo) Bar() {
 
 初版的 Mutex 实现有一个问题：请求锁的 goroutine 会排队等待获取互斥锁。虽然这貌似很公平，但是从性能上来看，却不是最优的。因为如果能够把锁交给正在占用 CPU 时间片的 goroutine 的话，那就不需要做上下文的切换，在高并发的情况下，可能会有更好的性能。
 
-#### 第二阶段
+### 第二阶段
 
 对 Mutex 做了一次大的调整，调整后的 Mutex 实现如下：
 
@@ -574,7 +572,7 @@ func (m *Mutex) Unlock() {
 
 **相对于初版的设计，这次的改动主要就是，新来的 goroutine 也有机会先获取到锁，甚至一个 goroutine 可能连续获取到锁，打破了先来先得的逻辑。但是，代码复杂度也显而易见。**
 
-#### 第三阶段
+### 第三阶段
 
 在这里如果新来的 goroutine 或者是被唤醒的 goroutine 首次获取不到锁，它们就会通过自旋（spin，通过循环不断尝试，spin 的逻辑是在runtime 实现的，如下所示）的方式，尝试检查锁是否被释放。在尝试一定的自旋次数后，再执行原来的逻辑。
 
@@ -639,7 +637,7 @@ func (m *Mutex) Lock() {
 }
 ```
 
-#### 第四阶段
+### 第四阶段
 
 经过几次优化，Mutex 的代码越来越复杂，应对高并发争抢锁的场景也更加**公平**。因为新来的 goroutine 也参与竞争，有可能每次都会被新来的 goroutine 抢到获取锁的机会，在极端情况下，等待中的 goroutine 可能会一直获取不到锁，这就是**饥饿问题**。
 
@@ -791,9 +789,9 @@ func (m *Mutex) unlockSlow(new int32) {
 
 正常模式拥有更好的性能，因为即使有等待抢锁的 waiter，goroutine 也可以连续多次获取到锁。饥饿模式是对公平性和性能的一种平衡，它避免了某些 goroutine 长时间的等待锁。在饥饿模式下，优先对待的是那些一直在等待的 waiter。
 
-### Mutex常见错误使用
+## Mutex常见错误使用
 
-#### Lock/Unlock不是成对出现
+### Lock/Unlock不是成对出现
 
 这会导致要么死锁（缺少Unlock），要么Panic（Unlock一个未加锁的Mutex）。
 
@@ -807,7 +805,7 @@ func (m *Mutex) unlockSlow(new int32) {
 
 缺少Lock导致出现对未加锁的Mutex执行Unlock操作，一般都是误操作删除了Lock代码。
 
-#### Copy已使用的Mutex
+### Copy已使用的Mutex
 
 **Package sync 的同步原语在使用后是不能复制的。**
 
@@ -870,7 +868,7 @@ go vet main.go
 
 检查是通过[copylock](https://github.com/golang/tools/blob/master/go/analysis/passes/copylock/copylock.go)分析器静态分析实现的。这个分析器会分析函数调用、range 遍历、复制、声明、函数返回值等位置，有没有锁的值 copy 的情景，以此来判断有没有问题。可以说，只要是实现了 Locker 接口，就会被分析。
 
-#### 重入
+### 重入
 
 > 可重入锁：当一个线程获取锁时，如果没有其它线程拥有这个锁，那么，这个线程就成功获取到这个锁。之后，如果其它线程再请求这个锁，就会处于阻塞等待的状态。但是，如果拥有这把锁的线程再请求这把锁的话，不会阻塞，而是成功返回，所以叫可重入锁（有时候也叫做递归锁）。只要你拥有这把锁，你可以可着劲儿地调用，比如通过递归实现一些算法，调用者不会阻塞或者死锁。
 
@@ -928,7 +926,7 @@ Process finished with exit code 2
 
 可重入锁（递归锁）解决了代码重入或者递归调用带来的死锁问题，同时它也带来了另一个好处，就是可以要求，只有持有锁的 goroutine 才能 unlock 这个锁。这也很容易实现，因为在上面这两个方案中，都已经记录了是哪一个 goroutine 持有这个锁。
 
-##### 方案一
+#### 方案一
 
 获取goroutine id的第一种方式：通过 `runtime.Stack` 方法获取栈帧信息，栈帧信息里包含 goroutine id。
 
@@ -998,7 +996,7 @@ func (m *RecursiveMutex) Unlock() {
 
 **尽管拥有者可以多次调用 Lock，但是也必须调用相同次数的 Unlock，这样才能把锁释放掉。这是一个合理的设计，可以保证 Lock 和 Unlock 一一对应。**
 
-##### 方案二
+#### 方案二
 
 方案一是用 goroutine id 做 goroutine 的标识，也可以让 goroutine 自己来提供标识。Go 开发者不期望利用 goroutine id 做一些不确定的东西，所以，没有暴露获取 goroutine id 的方法。
 
@@ -1038,7 +1036,7 @@ func (m *TokenRecursiveMutex) Unlock(token int64) {
 }
 ```
 
-#### 死锁
+### 死锁
 
 > 死锁：两个或两个以上的进程（或线程，goroutine）在执行过程中，因争夺共享资源而处于一种互相等待的状态，如果没有外部干涉，它们都将无法推进下去，此时，称系统处于死锁状态或系统产生了死锁。一个经典的死锁问题就是[哲学家就餐问题](https://zh.wikipedia.org/wiki/%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%B0%B1%E9%A4%90%E9%97%AE%E9%A2%98)。
 
@@ -1052,3 +1050,166 @@ func (m *TokenRecursiveMutex) Unlock(token int64) {
 可以引入第三方的锁或者解决持有等待这个问题来避免死锁。
 
 并发程序最难跟踪调试的就是很难重现，因为并发问题不是按照我们指定的顺序执行的，由于计算机调度的问题和事件触发的时机不同，死锁的 Bug 可能会在极端的情况下出现。通过搜索日志、查看日志，我们能够知道程序有异常了，比如某个流程一直没有结束。这个时候，可以通过 Go pprof 工具分析，它提供了一个 block profiler 监控阻塞的 goroutine。除此之外，我们还可以查看全部的 goroutine 的堆栈信息，通过它，你可以查看阻塞的 groutine 究竟阻塞在哪一行哪一个对象上了。
+
+## Mutex拓展功能
+
+如果互斥锁被某个 goroutine 获取了，而且还没有释放，那么，其他请求这把锁的 goroutine，就会阻塞等待，直到有机会获得这把锁。增加一个监控指标，等待这把锁的goroutine数量，把这个指标推送到时间序列数据库中，再通过一些监控系统（比如 Grafana）展示出来。
+
+**锁是性能下降的“罪魁祸首”之一，所以，有效地降低锁的竞争，就能够很好地提高性能。因此，监控关键互斥锁上等待的 goroutine 的数量，是分析锁竞争的激烈程度的一个重要指标。**
+
+基于标准库中 Mutex 的实现，为 Mutex 增加一些额外的功能：
+
+- TryLock
+- 获取等待者的数量等指标
+- 使用 Mutex 实现一个线程安全的队列
+
+### TryLock
+
+当一个 goroutine 调用 TryLock 方法请求锁的时候：
+
+- 如果这把锁没有被其他 goroutine 所持有，那么，这个 goroutine 就持有了这把锁，并返回 true；
+- 如果这把锁已经被其他 goroutine 所持有，或者是正在准备交给某个被唤醒的 goroutine，那么，这个请求锁的 goroutine 就直接返回 false，不会阻塞在方法调用上。
+
+> 例如在实际开发中，更新配置数据的时候，为了避免多个goroutine并发修改数据，可以使用TryLock，这样只会有一个goroutine修改配置，其他goroutine直接返回false，并放弃休息。
+
+实现TryLock的方式：
+
+- 基于Mutex扩展
+- 基于Channel扩展
+
+```go
+// 复制Mutex定义的常量
+const (
+    mutexLocked = 1 << iota // 加锁标识位置
+    mutexWoken              // 唤醒标识位置
+    mutexStarving           // 锁饥饿标识位置
+    mutexWaiterShift = iota // 标识waiter的起始bit位置
+)
+
+// 扩展一个Mutex结构
+type Mutex struct {
+    sync.Mutex
+}
+
+// 尝试获取锁
+func (m *Mutex) TryLock() bool {
+    // 说明此时无协程持有锁，如果能成功抢到锁，返回true
+    if atomic.CompareAndSwapInt32((*int32)(unsafe.Pointer(&m.Mutex)), 0, mutexLocked) {
+        return true
+    }
+
+    // 判断此时是否有协程持有锁，如果处于唤醒、加锁或者饥饿状态，这次请求就不参与竞争了，返回false
+    old := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+    if old&(mutexLocked|mutexStarving|mutexWoken) != 0 {
+        return false
+    }
+
+    // 尝试在竞争的状态下请求锁
+    new := old | mutexLocked
+    return atomic.CompareAndSwapInt32((*int32)(unsafe.Pointer(&m.Mutex)), old, new)
+}
+```
+
+三个判断逻辑：
+
+1. 如果很幸运，没有其他 goroutine 争这把锁，那么，这把锁就会被这个请求的 goroutine 获取，直接返回。
+2. 如果锁已经被其他 goroutine 所持有，或者被其他唤醒的 goroutine 准备持有，那么，就直接返回 false，不再请求。
+3. 如果没有被持有，也没有其它唤醒的 goroutine 来竞争锁，锁也不处于饥饿状态，就尝试获取这把锁，不论是否成功都将结果返回。因为，这个时候，可能还有其他的 goroutine 也在竞争这把锁，所以，不能保证成功获取这把锁。
+
+### 获取等待者数量等指标
+
+```go
+// 前四个字节是state
+type Mutex struct {
+    state int32
+    sema  uint32
+}
+```
+
+通过 state 字段，可以知道：
+
+- 锁是否已经被某个 goroutine 持有、
+- 当前是否处于饥饿状态、
+- 是否有等待的 goroutine 被唤醒、
+- 等待者的数量等信息。
+
+但是，state 这个字段并没有暴露出来，要想办法获取到这个字段（通过 unsafe 的方式实现），并进行解析。
+
+```go
+// 在tryLock的基础上增加Count方法
+func (m *Mutex) Count() int {
+    // 获取state字段的值
+    v := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+    v = v >> mutexWaiterShift //得到等待者的数值
+    v = v + (v & mutexLocked) //再加上锁持有者的数量，0或者1
+    return int(v)
+}
+```
+
+通过unsafe的操作，获取state字段的值，左移mutexWaiterShift位后，剩下值就是当前waiter的数量，不要漏掉当前锁的持有者。
+
+- state 这个字段的第一位是用来标记锁是否被持有，
+- 第二位用来标记是否已经唤醒了一个等待者，
+- 第三位标记锁是否处于饥饿状态，
+
+通过分析这个 state 字段我们就可以得到这些状态信息。
+
+```go
+// 锁是否被持有
+func (m *Mutex) IsLocked() bool {
+    state := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+    return state&mutexLocked == mutexLocked
+}
+
+// 是否有等待者被唤醒
+func (m *Mutex) IsWoken() bool {
+    state := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+    return state&mutexWoken == mutexWoken
+}
+
+// 锁是否处于饥饿状态
+func (m *Mutex) IsStarving() bool {
+    state := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+    return state&mutexStarving == mutexStarving
+}
+```
+
+### 实现线程安全的队列
+
+Mutex 经常和其他非线程安全的数据结构一起，组合成一个线程安全的数据结构。新数据结构的业务逻辑由原来的数据结构提供，**Mutex 提供了锁的机制，来保证线程安全**。
+
+使用Slice实现的队列是非线程安全的，出队（Dequeue）和入队（Enqueue）的时候会出现data race，使用Mutex在出队和入队的时候加上锁的保护。
+
+```go
+type SliceQueue struct {
+    data []interface{}
+    mu   sync.Mutex
+}
+
+func NewSliceQueue(n int) (q *SliceQueue) {
+    return &SliceQueue{data: make([]interface{}, 0, n)}
+}
+
+// Enqueue 把值放在队尾
+func (q *SliceQueue) Enqueue(v interface{}) {
+    q.mu.Lock()
+    q.data = append(q.data, v)
+    q.mu.Unlock()
+}
+
+// Dequeue 移去队头并返回
+func (q *SliceQueue) Dequeue() interface{} {
+    q.mu.Lock()
+    defer  q.mu.Unlock()
+
+    if len(q.data) == 0 {
+        return nil
+    }
+
+    v := q.data[0]
+    q.data = q.data[1:]
+    return v
+}
+```
+
+通过 Mutex 为一个非线程安全的`data interface{}`实现线程安全的访问。
