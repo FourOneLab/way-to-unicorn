@@ -71,6 +71,7 @@
     * [分布式]
     * [基本并发原语]
       * [Mutex](04-编程语言/golang/并发编程/01-Mutex.md)
+      * [RWMutex](04-编程语言/golang/并发编程/02-RWMutex.md)
   * [Shell](04-编程语言/shell)
     * [速查表](04-编程语言/shell/01-速查表.md)
     * [编写指南](04-编程语言/shell/02-shell编写指南.md)
