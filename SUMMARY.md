@@ -115,6 +115,8 @@
     * [安全容器技术](07-云原生/14-安全容器技术.md)
     * [DashBoard](07-云原生/15-Dashboard.md)
     * [垃圾回收](07-云原生/Kubernetes-GC.md)
+    * [代码生成](07-云原生/CRD-Code-gen.md)
+    * [API Library](07-云原生/API.md)
   * [Serverless]
     * [Serverless](07-云原生/17-Serverless.md)
     * [Faas](07-云原生/18-FaaS.md)
