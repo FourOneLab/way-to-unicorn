@@ -37,3 +37,7 @@ runtime 包提供一个辅助转换函数，这使得自定义 API 对象很容�
 
 - 外部（序列化）类型：没有自己的版本，如 TypeMeta
 - 内部（不序列化）类型：被多种不同的 API 组依赖，放在这里避免重复或循环导入，如标签选择器（LabelSelector）
+
+## sigs.k8s.io/controller-runtime
+
+用于构建Controller的一组go公共库。kubebuilder和Operator SDK都用到了这个库，这两个都是用于创建新项目的工具。
