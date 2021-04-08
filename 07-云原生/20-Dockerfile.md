@@ -135,6 +135,10 @@ RUN groupadd -r app && useradd --no-log-init -r -g app app
 
 如果需要类似 `sudo` 这样的功能来进行一些类似初始化守护进程这样的操作，可以考虑使用 [gosu](https://github.com/tianon/gosu)。
 
+## `docker build` 参数
+
+`--add-host`: 添加自定义的域名与IP地址的映射到镜像中（因为容器的 `/etc/hosts` 文件内容不能修改）
+
 ## 其他工具
 
 buildah / podman
