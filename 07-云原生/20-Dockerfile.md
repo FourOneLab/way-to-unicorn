@@ -141,4 +141,4 @@ RUN groupadd -r app && useradd --no-log-init -r -g app app
 
 ## 其他工具
 
-buildah / podman
+号称下一代容器技术的[PSB](https://www.redhat.com/en/blog/say-hello-buildah-podman-and-skopeo)：[podman](https://podman.io) [skopeo](https://github.com/containers/skopeo) [buildah](https://buildah.io)
