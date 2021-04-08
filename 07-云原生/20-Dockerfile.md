@@ -79,9 +79,26 @@ docker build [OPTIONS] -
 |不安装建议性（非必须）的依赖|`apt-get install -y -no-install-recommends`|`apk add --update --no-cache`||
 |清理安装后的缓存文件|`rm -rf /var/lib/apt/lists/*`|`rm -rf /var/cache/apk/*`|`yum clean all`|
 
-> 划重点，**安装和清理缓存需要在同一层中进行，也就是写在同一个RUN指令中**。
+> 划重点，**安装和清理缓存需要在同一层中进行，也就是写在同一个RUN指令中**。同样的情况在设置ENV的时候也是。
 
 因为在另一层进行操作的话，其实只是覆盖了上一层的文件，真实的文件还是在的。所以在单独一层中进行任何移动、更改（包括属性、权限等）、删除文件，都会出现文件复制一个副本，从而镜像非常大的情况。
+
+```dockerfile
+RUN apt-get update && apt-get install -y -no-install-recommends \
+    aufs-tools \
+    automake \
+    build-essential \
+    curl \
+    dpkg-sig \
+    libcap-dev \
+    libsqlite3-dev \
+    mercurial \
+    reprepro \
+    ruby1.9.1 \
+    ruby1.9.1-dev \
+    s3cmd=1.1.* \
+ && rm -rf /var/lib/apt/lists/*
+```
 
 ### 多阶段构建
 
@@ -106,6 +123,17 @@ docker 提供 `--squash` 参数，在构建的过程中将镜像的中间层都�
 ## 容器权限足够小
 
 在容器运行起来后，在以镜像为基础的只读层上增加了一个**可读写**的容器层。这个处于运行状态的容器中的所有变更都是保存在这个容器层中，包括新建文件、修改文件、删除文件等操作。
+
+如果一个服务运行的时候不需要 `root` 权限，那么在 `Dockerfile` 中使用 `USER` 来更改为普通用户。在更改用户之前，首先要保证用户已经创建好，可以通过如下命令创建。
+
+```dockerfile
+# UID/GID是在镜像已有的基础上递增的，也可以显式指定UID/GID的数值
+RUN groupadd -r app && useradd --no-log-init -r -g app app
+```
+
+> Debian/Ubuntu 的 adduser 指令不支持 --no-log-init 参数。
+
+如果需要类似 `sudo` 这样的功能来进行一些类似初始化守护进程这样的操作，可以考虑使用 [gosu](https://github.com/tianon/gosu)。
 
 ## 其他工具
 
